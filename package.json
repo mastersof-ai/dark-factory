@@ -10,6 +10,7 @@
     "bin/",
     "src/",
     "files/",
+    "hooks/",
     "LICENSE",
     "README.md"
   ],
