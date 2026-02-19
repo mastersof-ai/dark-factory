@@ -1,7 +1,7 @@
 {
   "name": "@mastersof-ai/dark-factory",
   "version": "0.1.0",
-  "description": "Map any codebase with specialist AI agents. A Claude Code skill pack for architecture documentation.",
+  "description": "An automated software engineering tool with 100% AI engineers. Built on Claude Code.",
   "type": "module",
   "bin": {
     "dark-factory": "bin/dark-factory.mjs"
@@ -13,7 +13,8 @@
     "df/",
     "hooks/",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "keywords": [
     "claude-code",

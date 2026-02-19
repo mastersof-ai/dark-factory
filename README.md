@@ -1,8 +1,33 @@
 # Dark Factory
 
-Map any codebase with specialist AI agents. A skill pack for [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
+An automated software engineering tool with 100% AI engineers. Built on [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
 
-Dark Factory analyzes your codebase and produces structured architecture documentation — per-component docs covering architecture, stack, conventions, testing, and concerns. It scores your existing AI agents against each component and assigns the best specialist for the job.
+> **Pre-release** — This is early. The core pipeline works and produces useful output today, but the full vision is still being built. See [where we're headed](#the-vision).
+
+## Why This Exists
+
+I use Claude Code a lot. It generates a *ton* of code — and I was drowning in the review workload. Just like code reviews in the real world, my manual reviews weren't catching everything. API breakages slipped through. UX regressions slipped through. And honestly, manual review of AI-generated code has marginal value at best, especially when the code is driven by experienced engineers working with Opus.
+
+So I started thinking: what if Claude itself could become the factory floor? Not one agent doing everything, but a team — specialists that plan, review, test APIs (Postman), test UX (Playwright), run security checks, and verify each other's work. Spend your time up front getting the design and spec right with an AI team, push go, and what comes out is a system that's been vetted more thoroughly than most human projects. Ten different agents running ten distinct verification passes, plus static analysis, plus whatever else you wire up.
+
+This is what everyone talks about as "the future" — but it's already here if you do it right.
+
+Tools like [GSD](https://github.com/gsd-build/get-shit-done) and [SuperPowers](https://github.com/obra/superpowers) have trailblazed this space. GSD in particular is a master class in building a complete software development lifecycle workflow engine inside Claude Code. But I wanted more. I wanted to work across multiple system components, spin out agents that specialize in each part, have them work independently, review each other's output, and collaborate when the problem crosses boundaries.
+
+That's Dark Factory. A coordinated team of AI agents and a multi-agent workflow that takes you from initial thought (or PR) to completed, validated fix. Coordinated agents and smart workflows can one-shot much bigger systems than vanilla Claude Code — and the goal isn't to replace Claude Code, but to grow with it. As the model improves, you still have your Dark Factory working for you.
+
+## What It Does Today
+
+Right now, Dark Factory's first iteration focuses on **understanding your codebase**:
+
+1. **Discovers** your system components through an interactive conversation
+2. **Recruits** specialist agents — scores them against each component, assigns the best fit
+3. **Analyzes** each component in parallel, producing structured architecture docs
+4. **Verifies** output quality against defined thresholds
+
+Even without the full workflow engine, the generated docs are immediately useful. Drop them into your prompts, use them as context for other tools, or just read them to understand a codebase you inherited. We're building the foundation — per-component context that future actions will use across tasks and agent invocations. We're helping Claude Code find its context window.
+
+I imagine one day Claude Code itself will just do these types of flows natively. But until then, we're here.
 
 ## Quick Start
 
@@ -17,12 +42,17 @@ npx @mastersof-ai/dark-factory init --global
 /df:map-codebase
 ```
 
-That's it. Dark Factory will:
+## The Vision
 
-1. **Discover** your components (interactive conversation)
-2. **Recruit** agents — score existing agents against components, assign specialists
-3. **Analyze** each component in parallel with assigned agents
-4. **Verify** output quality and offer to commit
+The end state is a Dark Factory that takes you from "here's what I want to build" to "here's a tested, reviewed, verified implementation" — with a team of specialist agents doing the heavy lifting:
+
+- Agents that own specific components and know them deeply
+- Cross-component collaboration when changes span boundaries
+- Automated API and UX testing, security scanning, static analysis
+- Agents that review each other's work from different angles
+- A workflow that gets the design right *before* writing code
+
+This is the stuff that AI skeptics say will never happen. We're building it anyway.
 
 ## Installation Modes
 
@@ -91,7 +121,7 @@ If your project has no agents yet, Dark Factory detects the gap and generates se
 
 Dark Factory checks for updates automatically at session start. When an update is available:
 
-- **Status bar**: Shows `⬆ /df:update` indicator (if no other tool owns the status bar)
+- **Status bar**: Shows `⬆ /df:update` indicator
 - **In Claude Code**: Run `/df:update` to update
 
 From the terminal:
@@ -100,53 +130,55 @@ From the terminal:
 npx @mastersof-ai/dark-factory update
 ```
 
-Updates skills, templates, workflows, and hooks. Preserves your custom agents.
+## Advanced Options
+
+### Custom Config Directory
+
+```bash
+CLAUDE_CONFIG_DIR=/custom/path dark-factory init --global
+
+# Or use --config-dir / -c flag (overrides --local/--global and env var)
+dark-factory init -c /custom/path
+```
+
+### Force Statusline
+
+By default, Dark Factory won't overwrite an existing statusline registration (e.g., from GSD). Use `--force-statusline` to override:
+
+```bash
+dark-factory init --global --force-statusline
+```
 
 ## How It Works
 
-Dark Factory installs into `.claude/` — the standard Claude Code configuration directory:
-
-```
-.claude/
-  commands/df/           # Skill entry points (what you invoke)
-  df/
-    workflows/           # Orchestration logic
-    templates/           # Doc templates (structure for each doc type)
-    references/          # Scoring rubric, evaluation criteria
-    registry.md          # Registry template (actual registry lives in .dark-factory/)
-  dark-factory/
-    VERSION              # Installed version (for update detection)
-  hooks/
-    df-check-update.js   # Background update check (SessionStart)
-    df-statusline.js     # Status bar integration
-```
-
-The skills are markdown files that Claude Code executes as AI-guided workflows. No runtime dependencies, no background processes, no API keys beyond what Claude Code already uses.
+Dark Factory installs into `.claude/` — the standard Claude Code configuration directory. The skills are markdown files that Claude Code executes as AI-guided workflows. No runtime dependencies, no background processes, no API keys beyond what Claude Code already uses.
 
 ## Uninstall
 
 ```bash
-# Remove Dark Factory skills, config, and hooks
-rm -rf .claude/commands/df/ .claude/df/ .claude/dark-factory/
-rm -f .claude/hooks/df-check-update.js .claude/hooks/df-statusline.js
-
-# Remove generated docs (optional)
-rm -rf .dark-factory/
-
-# Remove any DF-created agents (optional)
-rm -f .claude/agents/df-*.md
+dark-factory uninstall          # auto-detects location
+dark-factory uninstall --local  # or specify explicitly
+dark-factory uninstall --global
 ```
 
-Then remove the DF hook entries from `.claude/settings.json` (or `~/.claude/settings.json` for global installs).
+Preserves your generated docs (`.dark-factory/`) and custom agents — delete those manually if unwanted.
 
 ## Requirements
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI
-- Node.js >= 18 (for the installer only — Dark Factory itself is pure markdown)
+- Node.js >= 18
+
+## Get in Touch
+
+Questions, ideas, or just want to talk about multi-agent workflows? Find me at **256BitChris** on [Reddit](https://reddit.com/u/256BitChris) or [X](https://x.com/256BitChris).
 
 ## License
 
-MIT - see [LICENSE](LICENSE)
+MIT — see [LICENSE](LICENSE)
+
+## Acknowledgments
+
+Standing on the shoulders of [GSD](https://github.com/gsd-build/get-shit-done) and [SuperPowers](https://github.com/obra/superpowers), which showed what's possible when you treat Claude Code as a workflow engine. Dark Factory takes a different path — multi-agent, multi-component — but the inspiration is real.
 
 ---
 
