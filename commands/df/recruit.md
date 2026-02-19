@@ -38,7 +38,7 @@ override assignments, and approve any new agent definitions.
 
 ## Output
 
-- `.claude/df/registry.md` — agent-to-component assignments with scores and verdicts
+- `.dark-factory/registry.md` — agent-to-component assignments with scores and verdicts
 - Any new `.claude/agents/df-*.md` definitions (for CREATE verdicts, with founder approval)
 
 ## Next Steps

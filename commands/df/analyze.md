@@ -27,7 +27,7 @@ Phase 3 of Dark Factory. Spawn the assigned agent for each component to write
 ## Prerequisites
 
 - `.dark-factory/SYSTEM.md` must exist (run `/df:discover` first)
-- `.claude/df/registry.md` should exist (run `/df:recruit` first)
+- `.dark-factory/registry.md` should exist (run `/df:recruit` first)
   - If no registry exists, falls back to `general-purpose` agents (M1 behavior)
 
 ## Execution
@@ -43,7 +43,7 @@ Follow **Phase 3** of the workflow at @.claude/df/workflows/map-codebase.md
 
 **Agent resolution:**
 
-- Read `.claude/df/registry.md` for agent assignments
+- Read `.dark-factory/registry.md` for agent assignments
 - Spawn `subagent_type` matching the registry entry (e.g., `backend-engineer`)
 - Fall back to `general-purpose` if no registry entry exists
 

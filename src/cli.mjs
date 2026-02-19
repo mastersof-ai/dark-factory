@@ -18,8 +18,8 @@ const VERSION = JSON.parse(
   readFileSync(join(PKG_ROOT, "package.json"), "utf8"),
 ).version;
 
-// Paths relative to their copy root (e.g., registry.md is relative to the df/ dest)
-const PRESERVED_FILES = new Set(["registry.md"]);
+// Paths relative to their copy root that are never overwritten during updates.
+const PRESERVED_FILES = new Set([]);
 
 // ---------------------------------------------------------------------------
 // File copying
@@ -99,7 +99,7 @@ function registerHooks(configDir) {
 
   // Add update check hook (new matcher format)
   settings.hooks.SessionStart.push({
-    matcher: {},
+    matcher: "",
     hooks: [
       {
         type: "command",
@@ -132,11 +132,10 @@ function install(configDir, { isUpdate = false } = {}) {
     join(configDir, "commands"),
   );
 
-  // 2. Copy df internals (preserve registry)
+  // 2. Copy df internals
   const dfResult = copyTree(
     join(PKG_ROOT, "df"),
     join(configDir, "df"),
-    { preserveExisting: true },
   );
 
   // 3. Copy hooks

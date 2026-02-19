@@ -100,7 +100,7 @@ From the terminal:
 npx @mastersof-ai/dark-factory update
 ```
 
-Updates skills, templates, workflows, and hooks. Preserves your agent registry and any custom agents.
+Updates skills, templates, workflows, and hooks. Preserves your custom agents.
 
 ## How It Works
 
@@ -113,7 +113,7 @@ Dark Factory installs into `.claude/` — the standard Claude Code configuration
     workflows/           # Orchestration logic
     templates/           # Doc templates (structure for each doc type)
     references/          # Scoring rubric, evaluation criteria
-    registry.md          # Your agent assignments (preserved on update)
+    registry.md          # Registry template (actual registry lives in .dark-factory/)
   dark-factory/
     VERSION              # Installed version (for update detection)
   hooks/

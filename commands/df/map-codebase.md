@@ -61,7 +61,7 @@ Cross-component templates: `.claude/df/templates/system.md` and `.claude/df/temp
 ```
 .claude/commands/df/       # Skills (commands)
 .claude/df/                # Workflows, templates, references (DF internals)
-.claude/df/registry.md     # Agent-to-component assignments (Phase 2 output)
+.dark-factory/registry.md  # Agent-to-component assignments (Phase 2 output, per-project)
 .claude/agents/df-*        # Per-component agents (created by Phase 2 when needed)
 .dark-factory/             # Output docs (component + cross-component)
 ```

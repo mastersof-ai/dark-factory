@@ -21,7 +21,7 @@ in sequence; the sub-commands can be run individually for targeted work.
 ```
 /df:discover → .dark-factory/SYSTEM.md, DEPENDENCIES.md
                         ↓
-/df:recruit  → .claude/df/registry.md (reads SYSTEM.md for component list)
+/df:recruit  → .dark-factory/registry.md (reads SYSTEM.md for component list)
                         ↓
 /df:analyze  → .dark-factory/{component}/*.md (reads registry for agent types)
                         ↓
@@ -124,11 +124,11 @@ a scorecard to the founder, and writes the registry. Runs in the main conversati
 (not spawned) so the founder can review and override.
 
 Scoring rubric: @.claude/df/references/agent-scoring.md
-Registry output: @.claude/df/registry.md
+Registry output: `.dark-factory/registry.md`
 
 ### Step 2.1: Check Existing Registry
 
-If `.claude/df/registry.md` already has assignments (non-empty table):
+If `.dark-factory/registry.md` already has assignments (non-empty table):
 
 1. Show the current registry to the user
 2. Ask:
@@ -193,7 +193,7 @@ For each component where the founder confirms CREATE:
 
 ### Step 2.6: Write Registry
 
-Write `.claude/df/registry.md` with all final assignments:
+Write `.dark-factory/registry.md` with all final assignments:
 
 - Include scores, verdicts, and any founder override notes
 - Record the date for staleness tracking
@@ -219,7 +219,7 @@ for each component.
 
 First, resolve the agent type for each component:
 
-1. Read `.claude/df/registry.md`
+1. Read `.dark-factory/registry.md`
 2. For each component:
    - If the registry has an assignment → use that agent as `subagent_type`
    - If the registry is empty or missing → fall back to `general-purpose` (M1 behavior)

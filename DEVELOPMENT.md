@@ -78,10 +78,8 @@ mkdir /tmp/df-test && cd /tmp/df-test
 dark-factory init --local
 ls -la .claude/
 
-# Test update preserves registry
-echo "| api | my-agent | 9/10 | ASSIGN | test |" >> .claude/df/registry.md
+# Test update doesn't break existing install
 dark-factory update
-cat .claude/df/registry.md   # should still have the test entry
 
 # Test help
 dark-factory help
@@ -147,7 +145,7 @@ commands/df/*.md           → commands/df/*.md              Skill entry points
 df/workflows/*.md          → df/workflows/*.md             Orchestration logic
 df/templates/*.md          → df/templates/*.md             Doc structure templates
 df/references/*.md         → df/references/*.md            Scoring rubric, eval criteria
-df/registry.md             → df/registry.md                Agent assignments (preserved)
+df/registry.md             → df/registry.md                Registry template (actual registry in .dark-factory/)
 hooks/df-check-update.js   → hooks/df-check-update.js      Background update check
 hooks/df-statusline.js     → hooks/df-statusline.js        Status bar indicator
 (generated at install)     → dark-factory/VERSION           Installed version
@@ -188,7 +186,7 @@ git push && git push --tags
 
 - [ ] All changes committed
 - [ ] Tested `init --local` in a clean directory
-- [ ] Tested `update` preserves registry
+- [ ] Tested `update` on existing install
 - [ ] No CloudRepo-specific references in installable files
 - [ ] README reflects current features
 - [ ] Version bumped in package.json
@@ -213,4 +211,4 @@ The installer merges into existing settings.json rather than overwriting:
 
 ### Preserved files
 
-Files in the `PRESERVED_FILES` set (currently just `registry.md`) are never overwritten during updates. This protects user state — agent assignments, scores, and manual overrides survive version bumps.
+The `PRESERVED_FILES` set in `cli.mjs` lists files that are never overwritten during updates (currently empty). The agent registry now lives in `.dark-factory/registry.md` (per-project output), so it's naturally preserved — the installer doesn't touch `.dark-factory/`.
