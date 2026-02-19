@@ -13,7 +13,6 @@ import { homedir } from "node:os";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PKG_ROOT = join(__dirname, "..");
-const FILES_DIR = join(PKG_ROOT, "files");
 const HOOKS_DIR = join(PKG_ROOT, "hooks");
 const VERSION = JSON.parse(
   readFileSync(join(PKG_ROOT, "package.json"), "utf8"),
@@ -120,13 +119,13 @@ function install(configDir, { isUpdate = false } = {}) {
 
   // 1. Copy command files
   const cmdResult = copyTree(
-    join(FILES_DIR, "commands"),
+    join(PKG_ROOT, "commands"),
     join(configDir, "commands"),
   );
 
   // 2. Copy df internals (preserve registry)
   const dfResult = copyTree(
-    join(FILES_DIR, "df"),
+    join(PKG_ROOT, "df"),
     join(configDir, "df"),
     { preserveExisting: true },
   );
