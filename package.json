@@ -1,0 +1,35 @@
+{
+  "name": "@mastersof-ai/dark-factory",
+  "version": "0.1.0",
+  "description": "Map any codebase with specialist AI agents. A Claude Code skill pack for architecture documentation.",
+  "type": "module",
+  "bin": {
+    "dark-factory": "bin/dark-factory.mjs"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "files/",
+    "LICENSE",
+    "README.md"
+  ],
+  "keywords": [
+    "claude-code",
+    "ai",
+    "codebase-mapping",
+    "architecture",
+    "documentation",
+    "agents",
+    "claude"
+  ],
+  "author": "Masters of AI <hello@mastersof.ai>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mastersof-ai/dark-factory.git"
+  },
+  "homepage": "https://github.com/mastersof-ai/dark-factory#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
