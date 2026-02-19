@@ -28,7 +28,7 @@ git push && git push --tags
 
 ### Repo root mirrors install structure
 
-`commands/`, `df/`, `hooks/` at package root are copied verbatim into `.claude/` during install. The path `df/templates/architecture.md` in the repo is the same as `.claude/df/templates/architecture.md` after install. No build, no mapping.
+`commands/`, `df/`, `hooks/` at package root map to `.claude/` during install. Markdown files undergo **path rewriting**: source files use `~/.claude/` as a canonical placeholder, and `copyTreeWithRewrite()` replaces it with the actual config directory path at install time (absolute for global, `./.claude/` for local).
 
 ### Only two kinds of code
 
@@ -37,7 +37,7 @@ git push && git push --tags
 
 ### The 4-phase pipeline
 
-Defined in `df/workflows/map-codebase.md`. Slash commands in `commands/df/` are thin entry points that reference the workflow via `@.claude/df/workflows/map-codebase.md`.
+Defined in `df/workflows/map-codebase.md`. Slash commands in `commands/df/` are thin entry points that reference the workflow via `@~/.claude/df/workflows/map-codebase.md` (rewritten at install time).
 
 - **Phase 1 (Discover)**: Interactive. Claude explores the repo, identifies components, writes `.dark-factory/SYSTEM.md` and `DEPENDENCIES.md`.
 - **Phase 2 (Recruit)**: Interactive. Scores existing `.claude/agents/*.md` against components on 4 dimensions (Stack Match, Domain Fit, Tooling, Availability). Writes `.dark-factory/registry.md`.
@@ -55,15 +55,21 @@ Phase 4 ← reads all output
 
 ### Installer mechanics (`src/cli.mjs`)
 
-- `copyTree()` walks source dirs recursively; `PRESERVED_FILES` set can protect files from being overwritten during updates (currently empty — registry moved to `.dark-factory/`)
+- `copyTreeWithRewrite(src, dest, pathPrefix)` replaces `copyTree()` — deletes `dest` before copying (clean install), rewrites `~/.claude/` in `.md` files to `pathPrefix`
+- `pathPrefix` is absolute path + `/` for global (or custom dir), `./.claude/` for local
+- `writeManifest()` generates SHA256 hashes of all installed files → `df-file-manifest.json`
+- `saveLocalPatches()` compares current files against manifest, backs up modified files to `df-local-patches/`
+- `verifyInstalled()` checks each target directory exists and is non-empty post-copy
+- Writes `{"type":"commonjs"}` to `{configDir}/package.json` (prevents CJS hooks breaking in ESM projects)
 - `registerHooks()` merges into `settings.json` additively — strips stale DF hook entries before re-adding, never overwrites unrelated settings
-- Statusline only registered if `settings.statusLine` doesn't already exist (respects GSD and other tools)
-- `detectInstalledScope()` checks local `.claude/dark-factory/VERSION` first, then global
+- Statusline only registered if `settings.statusLine` doesn't already exist (unless `--force-statusline`)
+- `detectInstalledScope()` checks local `.claude/dark-factory/VERSION` first, then `CLAUDE_CONFIG_DIR`, then global
+- `cmdUninstall()` removes all DF files, hooks, settings entries, CJS shim, manifest, and patches — preserves `.dark-factory/` and `agents/df-*`
 
 ### Hooks
 
-- `df-check-update.js` (SessionStart): Spawns background process, compares installed VERSION against `npm view`, writes result to `cache/df-update-check.json`. Silent failure throughout.
-- `df-statusline.js`: Reads the cache JSON, outputs ANSI indicator if update available. Reads stdin per Claude Code statusline protocol.
+- `df-check-update.js` (SessionStart): Spawns background process, compares installed VERSION against `npm view`, writes result to `cache/df-update-check.json`. Respects `CLAUDE_CONFIG_DIR`. Silent failure throughout.
+- `df-statusline.js`: Reads the cache JSON, outputs ANSI indicator if update available. Respects `CLAUDE_CONFIG_DIR`. Reads stdin per Claude Code statusline protocol.
 
 ## Key Conventions
 

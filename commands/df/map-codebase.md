@@ -33,7 +33,7 @@ For individual phases, use the sub-commands directly:
 
 ## Execution
 
-Follow the workflow at @.claude/df/workflows/map-codebase.md end-to-end.
+Follow the workflow at @~/.claude/df/workflows/map-codebase.md end-to-end.
 Preserve all workflow gates — especially the interactive Phase 1 conversation
 and the Phase 4 verification checks.
 
@@ -53,22 +53,22 @@ and the Phase 4 verification checks.
 
 ## Templates
 
-Per-component doc templates live at `.claude/df/templates/`.
-Cross-component templates: `.claude/df/templates/system.md` and `.claude/df/templates/dependencies.md`.
+Doc templates live in `~/.claude/df/templates/` (paths are rewritten at install time).
+Cross-component templates: `system.md` and `dependencies.md`. Per-component: `architecture.md`, `stack.md`, `conventions.md`, `testing.md`, `concerns.md`.
 
 ## Dark Factory Footprint
 
+DF skills and internals live in either `.claude/` (local install) or `~/.claude/` (global install):
+
 ```
-.claude/commands/df/       # Skills (commands)
-.claude/df/                # Workflows, templates, references (DF internals)
-.dark-factory/registry.md  # Agent-to-component assignments (Phase 2 output, per-project)
-.claude/agents/df-*        # Per-component agents (created by Phase 2 when needed)
+{config}/commands/df/      # Skills (commands)
+{config}/df/               # Workflows, templates, references (DF internals)
+```
+
+Per-project output (always in the project directory):
+
+```
 .dark-factory/             # Output docs (component + cross-component)
+.dark-factory/registry.md  # Agent-to-component assignments (Phase 2 output)
+.claude/agents/df-*        # Per-component agents (created by Phase 2 when needed)
 ```
-
-To completely remove Dark Factory:
-
-- Delete `.claude/commands/df/`
-- Delete `.claude/df/`
-- Delete `.claude/agents/df-*` (if agents were created)
-- Delete `.dark-factory/`

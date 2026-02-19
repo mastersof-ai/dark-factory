@@ -21,10 +21,10 @@ and write the agent registry.
 
 ## Execution
 
-Follow **Phase 2** of the workflow at @.claude/df/workflows/map-codebase.md
+Follow **Phase 2** of the workflow at @~/.claude/df/workflows/map-codebase.md
 (Steps 2.1 through 2.6).
 
-Scoring rubric: @.claude/df/references/agent-scoring.md
+Scoring rubric: @~/.claude/df/references/agent-scoring.md
 
 This runs as the main conversation so the founder can review the scorecard,
 override assignments, and approve any new agent definitions.

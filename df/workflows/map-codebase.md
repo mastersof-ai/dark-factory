@@ -90,10 +90,10 @@ Iterate until you have a clear picture. Don't rush this — context quality is e
 
 Create `.dark-factory/` directory, then write:
 
-1. **SYSTEM.md** — Use the template at `.claude/df/templates/system.md` as structure guidance.
+1. **SYSTEM.md** — Use the template at `~/.claude/df/templates/system.md` as structure guidance.
    Fill it with the information gathered in the conversation.
 
-2. **DEPENDENCIES.md** — Use the template at `.claude/df/templates/dependencies.md`.
+2. **DEPENDENCIES.md** — Use the template at `~/.claude/df/templates/dependencies.md`.
    Map all cross-component relationships, shared resources, and data flows.
 
 ### Step 1.6: Confirm Before Deep Dive
@@ -123,7 +123,7 @@ This phase scores existing agents against components discovered in Phase 1, pres
 a scorecard to the founder, and writes the registry. Runs in the main conversation
 (not spawned) so the founder can review and override.
 
-Scoring rubric: @.claude/df/references/agent-scoring.md
+Scoring rubric: @~/.claude/df/references/agent-scoring.md
 Registry output: `.dark-factory/registry.md`
 
 ### Step 2.1: Check Existing Registry
@@ -141,20 +141,23 @@ For "Re-score" or "Update specific": continue with Step 2.2.
 
 ### Step 2.2: Inventory Existing Agents
 
-Scan `.claude/agents/*.md` for all agent definitions:
+Scan both project-level and user-level agents:
 
-1. Read each agent file's frontmatter and first paragraph
-2. Extract: name, primary stack, domain expertise, tooling familiarity
-3. Build a candidate list (exclude agents with no engineering relevance,
+1. Read `.claude/agents/*.md` (project-level)
+2. Read `~/.claude/agents/*.md` (user-level / global)
+3. Merge both lists — if the same agent name exists in both, project-level takes priority
+4. Read each agent file's frontmatter and first paragraph
+5. Extract: name, primary stack, domain expertise, tooling familiarity
+6. Build a candidate list (exclude agents with no engineering relevance,
    e.g., sales advisors, content strategists)
 
-If no agents exist in `.claude/agents/`, note that all components will score as CREATE.
+If no agents exist in either location, note that all components will score as CREATE.
 
 ### Step 2.3: Score Component-Agent Pairs
 
 For each component from Phase 1:
 
-1. Read the scoring rubric at `.claude/df/references/agent-scoring.md`
+1. Read the scoring rubric at `~/.claude/df/references/agent-scoring.md`
 2. Score the top 2-3 candidate agents on all 4 dimensions
 3. Track availability — decrement as agents accumulate assignments
 4. Record the best match with total score and verdict
@@ -231,7 +234,7 @@ Then build a prompt for each component that includes:
 3. **Why this matters**: explain which downstream workflows consume these docs
    (e.g., `/work:research` reads `.dark-factory/` for context, Phase 2 uses docs to
    inform agent creation, `/work:assign` references component expertise)
-4. **Template references**: instruct the agent to read templates from `.claude/df/templates/`
+4. **Template references**: instruct the agent to read templates from `~/.claude/df/templates/`
 5. **Stack-specific guidance**: tailor exploration commands to the stack:
    - **Clojure**: look at `project.clj`, `src/`, namespace structure, protocols, Integrant config
    - **Angular/TypeScript**: look at `package.json`, `angular.json`, module structure, services, components
@@ -264,11 +267,11 @@ Explore `{location}` thoroughly and write 5 architecture documents to
 For each document, read the template FIRST at the path shown, then explore the
 component and write the doc.
 
-1. **ARCHITECTURE.md** — template: `.claude/df/templates/architecture.md`
-2. **STACK.md** — template: `.claude/df/templates/stack.md`
-3. **CONVENTIONS.md** — template: `.claude/df/templates/conventions.md`
-4. **TESTING.md** — template: `.claude/df/templates/testing.md`
-5. **CONCERNS.md** — template: `.claude/df/templates/concerns.md`
+1. **ARCHITECTURE.md** — template: `~/.claude/df/templates/architecture.md`
+2. **STACK.md** — template: `~/.claude/df/templates/stack.md`
+3. **CONVENTIONS.md** — template: `~/.claude/df/templates/conventions.md`
+4. **TESTING.md** — template: `~/.claude/df/templates/testing.md`
+5. **CONCERNS.md** — template: `~/.claude/df/templates/concerns.md`
 
 ## Stack-Specific Exploration
 

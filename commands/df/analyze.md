@@ -32,7 +32,7 @@ Phase 3 of Dark Factory. Spawn the assigned agent for each component to write
 
 ## Execution
 
-Follow **Phase 3** of the workflow at @.claude/df/workflows/map-codebase.md
+Follow **Phase 3** of the workflow at @~/.claude/df/workflows/map-codebase.md
 (Steps 3.1 through 3.4).
 
 **Scoping rules:**

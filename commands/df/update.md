@@ -4,9 +4,9 @@ allowed-tools:
   - Bash(npx *)
   - Bash(node *)
   - Bash(npm view *)
-  - Bash(cat *)
   - Read
   - Glob
+  - AskUserQuestion
 ---
 
 # Update Dark Factory
@@ -43,7 +43,22 @@ echo "Latest: v$LATEST"
 
 If the installed version matches the latest, report that Dark Factory is up to date and stop.
 
-### 3. Update
+### 3. Show Changelog
+
+Before updating, check if a changelog is available and show what changed:
+
+1. Read the installed changelog at `{configDir}/dark-factory/CHANGELOG.md` (if it exists)
+2. Fetch the latest changelog from the new version:
+   ```bash
+   npx @mastersof-ai/dark-factory@latest help 2>/dev/null
+   ```
+3. Present a summary of changes between the installed version and the latest version
+4. Use `AskUserQuestion` to confirm: "Update Dark Factory from v{INSTALLED} to v{LATEST}?"
+   - Options: "Update" (proceed), "Skip" (abort)
+
+If the user chooses "Skip", stop here.
+
+### 4. Update
 
 Run the installer with the detected scope:
 
@@ -51,7 +66,7 @@ Run the installer with the detected scope:
 npx @mastersof-ai/dark-factory@latest update --$SCOPE
 ```
 
-### 4. Clear Update Cache
+### 5. Clear Update Cache
 
 ```bash
 # Clear the update notification
@@ -59,8 +74,9 @@ rm -f .claude/cache/df-update-check.json
 rm -f "$HOME/.claude/cache/df-update-check.json"
 ```
 
-### 5. Report
+### 6. Report
 
 Show what was updated:
-- Previous version → new version
+- Previous version -> new version
+- Any local modifications that were backed up (check `df-local-patches/`)
 - Remind the user to restart Claude Code to pick up the new hooks

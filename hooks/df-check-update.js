@@ -25,6 +25,18 @@ const child = spawn(process.execPath, [__filename, "--background"], {
 });
 child.unref();
 
+function resolveGlobalConfigDir() {
+  const envDir = process.env.CLAUDE_CONFIG_DIR;
+  if (envDir) {
+    // Expand tilde
+    if (envDir === "~" || envDir.startsWith("~/")) {
+      return path.join(home, envDir.slice(1));
+    }
+    return path.resolve(envDir);
+  }
+  return path.join(home, ".claude");
+}
+
 function doCheck() {
   try {
     // Find installed version (local first, then global)
@@ -32,14 +44,15 @@ function doCheck() {
     let configDir;
 
     const localVersion = path.join(cwd, ".claude", "dark-factory", "VERSION");
-    const globalVersion = path.join(home, ".claude", "dark-factory", "VERSION");
+    const globalDir = resolveGlobalConfigDir();
+    const globalVersion = path.join(globalDir, "dark-factory", "VERSION");
 
     if (fs.existsSync(localVersion)) {
       installed = fs.readFileSync(localVersion, "utf8").trim();
       configDir = path.join(cwd, ".claude");
     } else if (fs.existsSync(globalVersion)) {
       installed = fs.readFileSync(globalVersion, "utf8").trim();
-      configDir = path.join(home, ".claude");
+      configDir = globalDir;
     } else {
       return; // Not installed
     }

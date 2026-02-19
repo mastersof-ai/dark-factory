@@ -11,10 +11,23 @@ const os = require("os");
 const home = os.homedir();
 const cwd = process.cwd();
 
+function resolveGlobalConfigDir() {
+  const envDir = process.env.CLAUDE_CONFIG_DIR;
+  if (envDir) {
+    // Expand tilde
+    if (envDir === "~" || envDir.startsWith("~/")) {
+      return path.join(home, envDir.slice(1));
+    }
+    return path.resolve(envDir);
+  }
+  return path.join(home, ".claude");
+}
+
 // Find cache (local install first, then global)
 let cache = null;
 const localCache = path.join(cwd, ".claude", "cache", "df-update-check.json");
-const globalCache = path.join(home, ".claude", "cache", "df-update-check.json");
+const globalDir = resolveGlobalConfigDir();
+const globalCache = path.join(globalDir, "cache", "df-update-check.json");
 
 try {
   if (fs.existsSync(localCache)) {

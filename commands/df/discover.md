@@ -24,7 +24,7 @@ None — this is the starting point.
 
 ## Execution
 
-Follow **Phase 1** of the workflow at @.claude/df/workflows/map-codebase.md
+Follow **Phase 1** of the workflow at @~/.claude/df/workflows/map-codebase.md
 (Steps 1.1 through 1.6).
 
 This runs as the main conversation (not a spawned agent) so you can ask the

@@ -78,14 +78,53 @@ mkdir /tmp/df-test && cd /tmp/df-test
 dark-factory init --local
 ls -la .claude/
 
+# Verify path rewriting (local should use ./.claude/)
+grep '\.claude/df/' .claude/df/workflows/map-codebase.md | head -3
+
+# Verify CommonJS shim
+cat .claude/package.json   # should be {"type":"commonjs"}
+
+# Verify file manifest
+cat .claude/df-file-manifest.json | head -5
+
 # Test update doesn't break existing install
 dark-factory update
+
+# Test local patch detection: modify a file, then update
+echo "# local edit" >> .claude/df/registry.md
+dark-factory update
+ls .claude/df-local-patches/   # should contain backed-up file
+
+# Test clean copy: add orphan, then update
+touch .claude/df/orphan.md
+dark-factory update
+ls .claude/df/orphan.md 2>/dev/null   # should be gone
+
+# Test uninstall
+dark-factory uninstall --local
+ls .claude/commands/df/ 2>/dev/null   # should be gone
+cat .claude/settings.json             # should have no DF hooks
+
+# Test global install with path rewriting
+dark-factory init --global
+grep "$HOME/.claude/df/" ~/.claude/df/workflows/map-codebase.md | head -3
+
+# Test custom config dir
+dark-factory init -c /tmp/df-custom
+ls /tmp/df-custom/commands/df/
+
+# Test CLAUDE_CONFIG_DIR env var
+CLAUDE_CONFIG_DIR=/tmp/df-env dark-factory init --global
+ls /tmp/df-env/commands/df/
+
+# Test non-interactive fallback
+echo "" | dark-factory init   # should default to global
 
 # Test help
 dark-factory help
 
 # Clean up
-rm -rf /tmp/df-test
+rm -rf /tmp/df-test /tmp/df-custom /tmp/df-env
 ```
 
 ## Project vs User Install: When to Use Which
@@ -139,21 +178,33 @@ dark-factory update --global
 What's in the repo and where it gets installed:
 
 ```
-Source (repo)              → Installed to (.claude/)       Purpose
-─────────────────────────  ──────────────────────────────  ───────────────────────
-commands/df/*.md           → commands/df/*.md              Skill entry points
-df/workflows/*.md          → df/workflows/*.md             Orchestration logic
-df/templates/*.md          → df/templates/*.md             Doc structure templates
-df/references/*.md         → df/references/*.md            Scoring rubric, eval criteria
-df/registry.md             → df/registry.md                Registry template (actual registry in .dark-factory/)
-hooks/df-check-update.js   → hooks/df-check-update.js      Background update check
-hooks/df-statusline.js     → hooks/df-statusline.js        Status bar indicator
-(generated at install)     → dark-factory/VERSION           Installed version
-(generated at install)     → settings.json (merged)         Hook + statusline registration
-─────────────────────────  ──────────────────────────────  ───────────────────────
-bin/dark-factory.mjs       (not installed)                  CLI entry point
-src/cli.mjs                (not installed)                  Installer logic
+Source (repo)              → Installed to (.claude/)        Purpose
+─────────────────────────  ──────────────────────────────── ───────────────────────
+commands/df/*.md           → commands/df/*.md (rewritten)   Skill entry points
+df/workflows/*.md          → df/workflows/*.md (rewritten)  Orchestration logic
+df/templates/*.md          → df/templates/*.md (rewritten)  Doc structure templates
+df/references/*.md         → df/references/*.md (rewritten) Scoring rubric, eval criteria
+df/registry.md             → df/registry.md (rewritten)     Registry template
+hooks/df-check-update.js   → hooks/df-check-update.js       Background update check
+hooks/df-statusline.js     → hooks/df-statusline.js         Status bar indicator
+CHANGELOG.md               → dark-factory/CHANGELOG.md      Version history
+(generated at install)     → dark-factory/VERSION            Installed version
+(generated at install)     → package.json                    CommonJS shim
+(generated at install)     → df-file-manifest.json           File hashes for patch detection
+(generated at install)     → settings.json (merged)          Hook + statusline registration
+─────────────────────────  ──────────────────────────────── ───────────────────────
+bin/dark-factory.mjs       (not installed)                   CLI entry point
+src/cli.mjs                (not installed)                   Installer logic
 ```
+
+### Path rewriting
+
+Source markdown files use `~/.claude/` as a canonical placeholder. At install time, `copyTreeWithRewrite()` replaces this placeholder with the actual config directory path:
+
+- **Global install**: `~/.claude/` → `/home/user/.claude/` (absolute path)
+- **Local install**: `~/.claude/` → `./.claude/` (relative to project root)
+
+This means template references like `~/.claude/df/templates/architecture.md` and `@` includes like `@~/.claude/df/workflows/map-codebase.md` resolve correctly regardless of install mode.
 
 ## Publishing
 
@@ -209,6 +260,10 @@ The installer merges into existing settings.json rather than overwriting:
 - **Statusline**: Only set if no existing statusline (doesn't replace GSD or other tools)
 - **Other settings**: Untouched
 
-### Preserved files
+### Clean copy and patch detection
 
-The `PRESERVED_FILES` set in `cli.mjs` lists files that are never overwritten during updates (currently empty). The agent registry now lives in `.dark-factory/registry.md` (per-project output), so it's naturally preserved — the installer doesn't touch `.dark-factory/`.
+The installer does a **clean destination copy** — it deletes `commands/df/` and `df/` before re-copying. This eliminates orphaned files from previous versions.
+
+To protect user modifications, the installer generates a **file manifest** (`df-file-manifest.json`) with SHA256 hashes after each install. On the next update, it compares installed files against the manifest and backs up any modified files to `df-local-patches/` before overwriting.
+
+The agent registry lives in `.dark-factory/registry.md` (per-project output), so it's naturally preserved — the installer doesn't touch `.dark-factory/`.
