@@ -89,14 +89,23 @@ function registerHooks(configDir) {
   if (!Array.isArray(settings.hooks.SessionStart)) settings.hooks.SessionStart = [];
 
   // Remove any existing DF hooks (clean reinstall)
+  // Handle both old format ({type, command}) and new format ({matcher, hooks})
   settings.hooks.SessionStart = settings.hooks.SessionStart.filter(
-    (h) => !h.command?.includes("df-check-update"),
+    (h) => {
+      const cmd = h.command || (h.hooks && h.hooks[0]?.command) || "";
+      return !cmd.includes("df-check-update");
+    },
   );
 
-  // Add update check hook
+  // Add update check hook (new matcher format)
   settings.hooks.SessionStart.push({
-    type: "command",
-    command: hookCommand(configDir, "df-check-update.js"),
+    matcher: {},
+    hooks: [
+      {
+        type: "command",
+        command: hookCommand(configDir, "df-check-update.js"),
+      },
+    ],
   });
 
   // Register statusline only if none exists
