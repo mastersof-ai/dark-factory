@@ -497,6 +497,12 @@ function install(configDir, { isUpdate = false, forceStatusline = false, pathPre
 
   console.log(`  Commands available:`);
   console.log(
+    `    /df:new           Capture a thought, explore code, shape an approach`,
+  );
+  console.log(
+    `    /df:list          Show all work items at all levels`,
+  );
+  console.log(
     `    /df:map-codebase  Full pipeline (discover + recruit + analyze + verify)`,
   );
   console.log(
@@ -766,6 +772,8 @@ function cmdHelp() {
     CLAUDE_CONFIG_DIR         Override global config directory (~/.claude/)
 
   After install, use these commands in Claude Code:
+    /df:new               Capture, explore, shape work items
+    /df:list              Show all work items
     /df:map-codebase      Full pipeline
     /df:discover          Component discovery
     /df:recruit           Agent recruitment
